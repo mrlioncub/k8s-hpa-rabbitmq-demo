@@ -28,7 +28,7 @@ kubectl get apiservices | grep "autoscaling"
 
 ## Deployment
 
-1. Get helm charts from repo (using git):
+__1.__ Get helm charts from repo (using git):
 ```bash
 git clone --depth 1 https://github.com/mrlioncub/k8s-hpa-rabbitmq-demo.git
 ```
@@ -37,21 +37,21 @@ or (using wget)
 wget https://github.com/mrlioncub/k8s-hpa-rabbitmq-demo/archive/master.zip
 unzip master.zip
 ```
-2. Run deploy (using helm 3)
+__2.__ Run deploy (using helm 3)
 ```bash
 cd k8s-hpa-rabbitmq-demo
 bash deploy.sh
 ```
-Default deploying with rabbitmq-ha. For deploying with bitnami/rabbitmq change deploy.sh:
+Default deploying with rabbitmq-ha. For deploying with bitnami/rabbitmq change deploy.sh (comment/uncomment):
 ```bash
 helm upgrade --install --create-namespace --namespace k8-hpa-rabbitmq-demo rabbitmq-server bitnami/rabbitmq -f charts/rabbitmq/values.yaml
 #helm upgrade --install --create-namespace --namespace k8-hpa-rabbitmq-demo rabbitmq-server stable/rabbitmq-ha -f charts/rabbitmq-ha/values.yaml
 ```
-
-3. Check
+__3.__ Check
 Api custom metrics (after deployment prometheus-adapter):
 ```bash
 kubectl get --raw /apis/custom.metrics.k8s.io/v1beta1 | jq .
+```
 Result:
 ```xml
 {
@@ -117,7 +117,7 @@ Result:
 NAME                  REFERENCE                            TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
 rabbitmq-server-hpa   Deployment/rabbitmq-agent-reciever   0/100     1         50        1          44m
 ```
-4. Run sending messages:
+__4.__ Run sending messages:
 ```bash
 kubectl --namespace k8-hpa-rabbitmq-demo run sender -it --rm --image=mrlioncub/rabbitmq-agent --restart=Never sender 50
 ```
@@ -128,7 +128,7 @@ Result:
  [x] Sent 'Message #49.......'
 pod "sender" deleted
 ```
-5. Get info hpa:
+__5.__ Get info hpa:
 ```bash
 kubectl get hpa -n k8-hpa-rabbitmq-demo -w
 ```
@@ -146,7 +146,8 @@ rabbitmq-server-hpa   Deployment/rabbitmq-agent-reciever   0/30      1         1
 rabbitmq-server-hpa   Deployment/rabbitmq-agent-reciever   0/30      1         10        6          7m37s
 rabbitmq-server-hpa   Deployment/rabbitmq-agent-reciever   0/30      1         10        1          7m52s
 ```
-
+  
+  
 __Tests conducted on Azure and Minicube__
 
 ## Links
