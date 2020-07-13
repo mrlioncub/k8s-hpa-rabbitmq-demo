@@ -1,5 +1,5 @@
 ---
-nameOverride: rabbitmq-server-scaling-demo
+nameOverride: rabbitmq-server
 
 rabbitmqUsername: guest
 rabbitmqPassword: guest
@@ -18,6 +18,6 @@ rabbitmqPrometheusPlugin:
   config: |
     prometheus.return_per_object_metrics = true
 
-#prometheus:
-#  operator:
-#    enabled: false
+prometheus:
+  operator:
+    enabled: false

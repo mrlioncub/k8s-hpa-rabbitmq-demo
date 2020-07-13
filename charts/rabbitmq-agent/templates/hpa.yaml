@@ -9,7 +9,7 @@ spec:
     kind: Deployment
     name: rabbitmq-agent-reciever
   minReplicas: 1
-  maxReplicas: 50
+  maxReplicas: 10
   metrics:
   - type: Object
     object:
@@ -21,4 +21,4 @@ spec:
         name: rabbitmq-server-0
       target:
         type: Value
-        value: 100
+        value: 30
