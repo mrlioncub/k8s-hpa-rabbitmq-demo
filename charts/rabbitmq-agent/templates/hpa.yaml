@@ -1,0 +1,24 @@
+---
+apiVersion: autoscaling/v2beta2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: rabbitmq-server-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: rabbitmq-agent-reciever
+  minReplicas: 1
+  maxReplicas: 50
+  metrics:
+  - type: Object
+    object:
+      metric:
+        name: rabbitmq_queue_messages
+      describedObject:
+        apiVersion: "/v1"
+        kind: Pod
+        name: rabbitmq-server-0
+      target:
+        type: Value
+        value: 100

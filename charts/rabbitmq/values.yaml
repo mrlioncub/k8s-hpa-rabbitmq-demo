@@ -1,0 +1,14 @@
+---
+
+auth:
+  username: guest
+  password: guest
+
+metrics:
+  enabled: true
+
+volumePermissions:
+  enabled: true
+
+extraConfiguration: |-
+  prometheus.return_per_object_metrics = true

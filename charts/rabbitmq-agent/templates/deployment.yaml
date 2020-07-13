@@ -1,0 +1,27 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rabbitmq-agent-reciever
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: rabbitmq-agent
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: rabbitmq-agent
+    spec:
+      containers:
+        - name: rabbitmq-agent-reciever
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          args:
+            - "reciever"
+#          env:
+#            - name: RABBITMQ_HOST
+#              value: rabbitmq-server
+#            - name: RABBITMQ_USER
+#              value: guest
+#            - name: RABBITMQ_PASS
+#              value: guest

@@ -1,0 +1,23 @@
+---
+nameOverride: rabbitmq-server-scaling-demo
+
+rabbitmqUsername: guest
+rabbitmqPassword: guest
+
+managementUsername: guest
+managementPassword: guest
+
+volumePermissions:
+  enabled: true
+
+replicaCount: 1
+
+rabbitmqPrometheusPlugin:
+  enabled: true
+  port: 9419
+  config: |
+    prometheus.return_per_object_metrics = true
+
+#prometheus:
+#  operator:
+#    enabled: false

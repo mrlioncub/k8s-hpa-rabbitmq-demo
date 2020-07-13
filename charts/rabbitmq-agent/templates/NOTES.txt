@@ -1,0 +1,3 @@
+Thanks for deploying the RabbitMQ Agent Reciever.  To inject sample events, run the following:
+
+kubectl --namespace {{ .Release.Namespace }} run sender -it --rm --image=mrlioncub/rabbitmq-agent --restart=Never sender <number of messages>
