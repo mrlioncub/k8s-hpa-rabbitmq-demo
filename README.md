@@ -154,4 +154,6 @@ __Tests conducted on Azure and Minicube__
 
 https://github.com/DirectXMan12/k8s-prometheus-adapter/blob/master/docs/config-walkthrough.md  
 https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/  
+https://github.com/helm/charts/blob/master/stable/rabbitmq-ha/values.yaml..
+https://github.com/bitnami/charts/blob/master/bitnami/rabbitmq/values.yaml..
 https://ryanbaker.io/2019-10-07-scaling-rabbitmq-on-k8s/  
