@@ -26,7 +26,7 @@ Check version api autoscaling (v2beta2.autoscaling):
 kubectl get apiservices | grep "autoscaling"
 ```
 
-##Deployment
+## Deployment
 
 1. Get helm charts from repo (using git):
 ```bash
@@ -122,7 +122,7 @@ rabbitmq-server-hpa   Deployment/rabbitmq-agent-reciever   0/100     1         5
 kubectl --namespace k8-hpa-rabbitmq-demo run sender -it --rm --image=mrlioncub/rabbitmq-agent --restart=Never sender 50
 ```
 Result:
-``
+```
  [x] Sent 'Message #0..'
 ...
  [x] Sent 'Message #49.......'
@@ -149,7 +149,7 @@ rabbitmq-server-hpa   Deployment/rabbitmq-agent-reciever   0/30      1         1
 
 __Tests conducted on Azure and Minicube__
 
-##Links
+## Links
 
 https://github.com/DirectXMan12/k8s-prometheus-adapter/blob/master/docs/config-walkthrough.md  
 https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/  
