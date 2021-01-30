@@ -93,7 +93,7 @@ Result:
 NAME                  REFERENCE                            TARGETS  MINPODS   MAXPODS   REPLICAS   AGE
 rabbitmq-server-hpa   Deployment/rabbitmq-agent-reciever   0/30     1         10        1          4m
 ```
-__4.__ Run sending messages:
+__5.__ Run sending messages:
 ```bash
 kubectl --namespace k8-hpa-rabbitmq-demo run sender -it --rm --image=mrlioncub/rabbitmq-agent --restart=Never sender 50
 ```
@@ -104,7 +104,7 @@ Result:
  [x] Sent 'Message #49.......'
 pod "sender" deleted
 ```
-__5.__ Get info hpa:
+__6.__ Get info hpa:
 ```bash
 kubectl get hpa -n k8-hpa-rabbitmq-demo -w
 ```
@@ -124,12 +124,12 @@ rabbitmq-server-hpa   Deployment/rabbitmq-agent-reciever   0/30      1         1
 ```
   
   
-__Tests conducted on Azure, Microk8s and Minicube__
+__Tests conducted on Azure, MicroK8s and Minicube__
 
 ## Links
 
-https://github.com/kubernetes-sigs/prometheus-adapter/blob/master/docs/config-walkthrough.md..
-https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/..
-https://www.rabbitmq.com/prometheus.html..
-https://github.com/bitnami/charts/blob/master/bitnami/rabbitmq/values.yaml..
-https://ryanbaker.io/2019-10-07-scaling-rabbitmq-on-k8s/..
+https://github.com/kubernetes-sigs/prometheus-adapter/blob/master/docs/config-walkthrough.md  
+https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/  
+https://www.rabbitmq.com/prometheus.html  
+https://github.com/bitnami/charts/blob/master/bitnami/rabbitmq/values.yaml  
+https://ryanbaker.io/2019-10-07-scaling-rabbitmq-on-k8s/  
