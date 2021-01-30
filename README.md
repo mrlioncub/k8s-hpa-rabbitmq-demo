@@ -4,7 +4,7 @@ Demo Kubernetes Horizontal Pod Autoscale based on Rabbitmq Queue (Custom Metrics
 
 ## Requirements
 
-  1. Kubernetes >= 1.16 (can use [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) with [enable addon metrics-server](https://kubernetes.io/docs/tutorials/hello-minikube/#enable-addons))
+  1. Kubernetes >= 1.16 (can use [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) with [enable addon metrics-server](https://kubernetes.io/docs/tutorials/hello-minikube/#enable-addons) or can use [MicroK8s](https://microk8s.io/docs) with [metrics-server](https://microk8s.io/docs/addons))
   2. [Helm 3](https://helm.sh/docs/intro/install/)
 
 ### Check kubernetes
@@ -26,6 +26,8 @@ Check version api autoscaling (v2beta2.autoscaling):
 kubectl get apiservices | grep "autoscaling"
 ```
 
+
+
 ## Deployment
 
 __1.__ Get helm charts from repo (using git):
@@ -37,7 +39,13 @@ or (using wget)
 wget https://github.com/mrlioncub/k8s-hpa-rabbitmq-demo/archive/master.zip
 unzip master.zip
 ```
-__2.__ Run deploy (using helm 3)
+__2.__ Get Repo Info
+```bash
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo update
+```
+__3.__ Run deploy (using helm 3)
 ```bash
 cd k8s-hpa-rabbitmq-demo
 bash deploy.sh
@@ -47,40 +55,8 @@ Default deploying with rabbitmq-ha. For deploying with bitnami/rabbitmq change d
 helm upgrade --install --create-namespace --namespace k8-hpa-rabbitmq-demo rabbitmq-server bitnami/rabbitmq -f charts/rabbitmq/values.yaml
 #helm upgrade --install --create-namespace --namespace k8-hpa-rabbitmq-demo rabbitmq-server stable/rabbitmq-ha -f charts/rabbitmq-ha/values.yaml
 ```
-__3.__ Check
-Api custom metrics (after deployment prometheus-adapter):
-```bash
-kubectl get --raw /apis/custom.metrics.k8s.io/v1beta1 | jq .
-```
-Result:
-```xml
-{
-  "kind": "APIResourceList",
-  "apiVersion": "v1",
-  "groupVersion": "custom.metrics.k8s.io/v1beta1",
-  "resources": [
-    {
-      "name": "pods/rabbitmq_queue_messages",
-      "singularName": "",
-      "namespaced": true,
-      "kind": "MetricValueList",
-      "verbs": [
-        "get"
-      ]
-    },
-    {
-      "name": "namespaces/rabbitmq_queue_messages",
-      "singularName": "",
-      "namespaced": false,
-      "kind": "MetricValueList",
-      "verbs": [
-        "get"
-      ]
-    }
-  ]
-}
-```
-And check value metrics:
+__4.__ Check
+Check api custom metrics (a few minutes after deployment prometheus-adapter):
 ```bash
 kubectl get --raw /apis/custom.metrics.k8s.io/v1beta1/namespaces/k8-hpa-rabbitmq-demo/pods/rabbitmq-server-0/rabbitmq_queue_messages | jq .
 ```
@@ -114,8 +90,8 @@ kubectl get hpa -n k8-hpa-rabbitmq-demo
 ```
 Result:
 ```
-NAME                  REFERENCE                            TARGETS   MINPODS   MAXPODS   REPLICAS   AGE
-rabbitmq-server-hpa   Deployment/rabbitmq-agent-reciever   0/100     1         50        1          44m
+NAME                  REFERENCE                            TARGETS  MINPODS   MAXPODS   REPLICAS   AGE
+rabbitmq-server-hpa   Deployment/rabbitmq-agent-reciever   0/30     1         10        1          4m
 ```
 __4.__ Run sending messages:
 ```bash
@@ -148,12 +124,12 @@ rabbitmq-server-hpa   Deployment/rabbitmq-agent-reciever   0/30      1         1
 ```
   
   
-__Tests conducted on Azure and Minicube__
+__Tests conducted on Azure, Microk8s and Minicube__
 
 ## Links
 
-https://github.com/DirectXMan12/k8s-prometheus-adapter/blob/master/docs/config-walkthrough.md  
-https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/  
-https://github.com/helm/charts/blob/master/stable/rabbitmq-ha/values.yaml..
+https://github.com/kubernetes-sigs/prometheus-adapter/blob/master/docs/config-walkthrough.md..
+https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/..
+https://www.rabbitmq.com/prometheus.html..
 https://github.com/bitnami/charts/blob/master/bitnami/rabbitmq/values.yaml..
-https://ryanbaker.io/2019-10-07-scaling-rabbitmq-on-k8s/  
+https://ryanbaker.io/2019-10-07-scaling-rabbitmq-on-k8s/..
