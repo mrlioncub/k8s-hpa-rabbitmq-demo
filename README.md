@@ -50,11 +50,6 @@ __3.__ Run deploy (using helm 3)
 cd k8s-hpa-rabbitmq-demo
 bash deploy.sh
 ```
-Default deploying with rabbitmq-ha. For deploying with bitnami/rabbitmq change deploy.sh (comment/uncomment):
-```bash
-helm upgrade --install --create-namespace --namespace k8-hpa-rabbitmq-demo rabbitmq-server bitnami/rabbitmq -f charts/rabbitmq/values.yaml
-#helm upgrade --install --create-namespace --namespace k8-hpa-rabbitmq-demo rabbitmq-server stable/rabbitmq-ha -f charts/rabbitmq-ha/values.yaml
-```
 __4.__ Check
 Check api custom metrics (a few minutes after deployment prometheus-adapter):
 ```bash
