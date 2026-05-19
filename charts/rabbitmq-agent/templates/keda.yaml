@@ -1,0 +1,20 @@
+{{- if .Values.keda.enabled }}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: rabbitmq-scaledobject
+spec:
+  scaleTargetRef:
+    name: rabbitmq-agent-reciever
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  pollingInterval: 15
+  cooldownPeriod: 0
+  triggers:
+  - type: rabbitmq
+    metadata:
+      host: http://guest:guest@rabbitmq-server:15672
+      mode: QueueLength
+      queueName: task_queue
+      value: "30"
+{{- end }}

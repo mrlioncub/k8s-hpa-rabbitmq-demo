@@ -1,5 +1,5 @@
 prometheus:
-  url: http://prometheus-server.k8-hpa-rabbitmq-demo.svc.cluster.local
+  url: http://prometheus-server
   port: 80
 
 logLevel: 6
@@ -7,9 +7,9 @@ logLevel: 6
 rules:
   default: false
   custom:
-  - seriesQuery: 'rabbitmq_queue_messages{kubernetes_namespace!="",kubernetes_pod_name!="",queue="task_queue"}'
+  - seriesQuery: 'rabbitmq_queue_messages{namespace!="",pod!="",queue="task_queue"}'
     resources:
       overrides:
-        kubernetes_namespace: {resource: "namespace"}
-        kubernetes_pod_name: {resource: "pod"}
+        namespace: {resource: "namespace"}
+        pod: {resource: "pod"}
     metricsQuery: sum(<<.Series>>{<<.LabelMatchers>>,queue="task_queue"}) by (<<.GroupBy>>)

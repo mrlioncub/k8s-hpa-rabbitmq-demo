@@ -1,0 +1,19 @@
+{{- if .Values.kedavm.enabled }}
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: rabbitmq-scaledobject
+spec:
+  scaleTargetRef:
+    name: rabbitmq-agent-reciever
+  minReplicaCount: 1
+  maxReplicaCount: 10
+  pollingInterval: 15
+  cooldownPeriod: 0
+  triggers:
+  - type: prometheus
+    metadata:
+      serverAddress: http://victoriametrics-victoria-metrics-single-server:8428
+      query: sum(rabbitmq_queue_messages{queue="task_queue"})
+      threshold: "30"
+{{- end }}

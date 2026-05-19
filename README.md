@@ -1,15 +1,15 @@
 # k8s-hpa-rabbitmq-demo
 
-Demo Kubernetes Horizontal Pod Autoscale based on Rabbitmq Queue (Custom Metrics)
+Demo Kubernetes Horizontal Pod Autoscaling based on RabbitMQ Queue (via Prometheus/VictoriaMetrics/KEDA)
 
 ## Requirements
 
-  1. Kubernetes >= 1.16 (can use [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) with [enable addon metrics-server](https://kubernetes.io/docs/tutorials/hello-minikube/#enable-addons) or can use [MicroK8s](https://microk8s.io/docs) with [metrics-server](https://microk8s.io/docs/addons))
+  1. Kubernetes >= v1.23 (can use [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) with [enable addon metrics-server](https://kubernetes.io/docs/tutorials/hello-minikube/#enable-addons) or can use [MicroK8s](https://microk8s.io/docs) with [metrics-server](https://microk8s.io/docs/addons))
   2. [Helm 3](https://helm.sh/docs/intro/install/)
 
-### Check kubernetes
+### Check Kubernetes
 
-Check version server kubernetes:
+Check Kubernetes server version:
 ```bash
 kubectl version
 ```
@@ -17,46 +17,74 @@ Check metrics-server:
 ```bash
 kubectl get svc -n kube-system metrics-server
 ```
-Check version helm:
+Check Helm version:
 ```bash
 helm version
 ```
-Check version api autoscaling (v2beta2.autoscaling):
+Check autoscaling API version (v2.autoscaling):
 ```bash
 kubectl get apiservices | grep "autoscaling"
 ```
-
-
 
 ## Deployment
 
 __1.__ Get helm charts from repo (using git):
 ```bash
 git clone --depth 1 https://github.com/mrlioncub/k8s-hpa-rabbitmq-demo.git
+cd k8s-hpa-rabbitmq-demo
 ```
 or (using wget)
 ```bash
 wget https://github.com/mrlioncub/k8s-hpa-rabbitmq-demo/archive/master.zip
 unzip master.zip
+cd k8s-hpa-rabbitmq-demo-master
 ```
-__2.__ Get Repo Info
+__2.__ Add Helm Repositories:
 ```bash
-helm repo add bitnami https://charts.bitnami.com/bitnami
+helm repo add helmforge https://repo.helmforge.dev
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+helm repo add vm https://victoriametrics.github.io/helm-charts
+helm repo add kedacore https://kedacore.github.io/charts
 helm repo update
 ```
-__3.__ Run deploy (using helm 3)
+__3.__ Run deploy (using helm 3). Choose 1 of the 3 options:
+
+__3.1.__ with Prometheus and Prometheus Adapter
 ```bash
-cd k8s-hpa-rabbitmq-demo
-bash deploy.sh
+bash deploy-prometheus.sh
 ```
+
+__3.2.__ with KEDA
+```bash
+bash deploy-keda.sh
+```
+
+__3.3.__ with KEDA and VictoriaMetrics
+```bash
+bash deploy-victoriametrics.sh
+```
+
 __4.__ Check
-Check api custom metrics (a few minutes after deployment prometheus-adapter):
+
+Check hpa (after deployment rabbitmq-agent-reciever):
+```bash
+kubectl get hpa -n k8-hpa-rabbitmq-demo
+```
+Result:
+```
+NAME                  REFERENCE                            TARGETS  MINPODS   MAXPODS   REPLICAS   AGE
+rabbitmq-server-hpa   Deployment/rabbitmq-agent-reciever   0/30     1         10        1          4m
+```
+TARGETS values:
+- `0/30` - correct
+- `<unknown>/30` - not correct (HPA is awaiting data)
+
+(Only for Prometheus) Check api custom metrics (a few minutes after deployment prometheus-adapter):
 ```bash
 kubectl get --raw /apis/custom.metrics.k8s.io/v1beta1/namespaces/k8-hpa-rabbitmq-demo/pods/rabbitmq-server-0/rabbitmq_queue_messages | jq .
 ```
 Result:
-```xml
+```json
 {
   "kind": "MetricValueList",
   "apiVersion": "custom.metrics.k8s.io/v1beta1",
@@ -79,15 +107,16 @@ Result:
   ]
 }
 ```
-Check hpa (after deployment rabbitmq-agent-reciever):
+(Only for KEDA) Check scaledobject (a few minutes after deployment KEDA):
 ```bash
-kubectl get hpa -n k8-hpa-rabbitmq-demo
+kubectl get scaledobject -n k8-hpa-rabbitmq-demo
 ```
 Result:
 ```
-NAME                  REFERENCE                            TARGETS  MINPODS   MAXPODS   REPLICAS   AGE
-rabbitmq-server-hpa   Deployment/rabbitmq-agent-reciever   0/30     1         10        1          4m
+NAME                    SCALETARGETKIND      SCALETARGETNAME           MIN   MAX   READY   ACTIVE   FALLBACK   PAUSED   TRIGGERS   AUTHENTICATIONS   AGE
+rabbitmq-scaledobject   apps/v1.Deployment   rabbitmq-agent-reciever   1     10    True    False    Unknown    False    rabbitmq                     108s
 ```
+
 __5.__ Run sending messages:
 ```bash
 kubectl --namespace k8-hpa-rabbitmq-demo run sender -it --rm --image=mrlioncub/rabbitmq-agent --restart=Never sender 50
@@ -118,13 +147,30 @@ rabbitmq-server-hpa   Deployment/rabbitmq-agent-reciever   0/30      1         1
 rabbitmq-server-hpa   Deployment/rabbitmq-agent-reciever   0/30      1         10        1          7m52s
 ```
   
-  
-__Tests conducted on Azure, MicroK8s and Minicube__
+__Tests conducted on Azure, MicroK8s and Minikube__
+
+## Errors
+
+May occur when upgrading from Prometheus HPA to KEDA:
+```
+Error: UPGRADE FAILED: failed to create resource: admission webhook "vscaledobject.kb.io" denied the request: the workload 'rabbitmq-agent-reciever' of type 'apps/v1.Deployment' is already managed by the hpa 'rabbitmq-server-hpa'
+```
+Resolution:
+```
+kubectl delete hpa rabbitmq-server-hpa -n k8-hpa-rabbitmq-demo
+# or
+helm upgrade --install --create-namespace --namespace k8-hpa-rabbitmq-demo rabbitmq-agent-reciever charts/rabbitmq-agent --set autoscaling.enabled=false
+```
+
 
 ## Links
 
-https://github.com/kubernetes-sigs/prometheus-adapter/blob/master/docs/config-walkthrough.md  
 https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkthrough/  
-https://www.rabbitmq.com/prometheus.html  
-https://github.com/bitnami/charts/blob/master/bitnami/rabbitmq/values.yaml  
+https://github.com/kubernetes-sigs/prometheus-adapter/blob/master/docs/config-walkthrough.md  
+https://keda.sh/docs/latest/reference/scaledobject-spec/  
+https://keda.sh/docs/latest/scalers/rabbitmq-queue/  
+https://keda.sh/docs/2.19/scalers/prometheus/  
+https://www.rabbitmq.com/prometheus  
+https://helmforge.dev/docs/charts/rabbitmq/
+
 https://ryanbaker.io/2019-10-07-scaling-rabbitmq-on-k8s/  

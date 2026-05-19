@@ -1,5 +1,5 @@
----
-apiVersion: autoscaling/v2beta2
+{{- if .Values.autoscaling.enabled }}
+apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
   name: rabbitmq-server-hpa
@@ -22,3 +22,4 @@ spec:
       target:
         type: Value
         value: 30
+{{- end }}

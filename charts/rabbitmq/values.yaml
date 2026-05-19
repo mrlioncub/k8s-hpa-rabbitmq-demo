@@ -1,14 +1,17 @@
----
+fullnameOverride: "rabbitmq-server"
 
 auth:
   username: guest
   password: guest
 
+podAnnotations:
+  prometheus.io/scrape: "true"
+  prometheus.io/port: "15692"
+  prometheus.io/path: "/metrics"
+
 metrics:
   enabled: true
 
-volumePermissions:
-  enabled: true
-
-extraConfiguration: |-
-  prometheus.return_per_object_metrics = true
+singleNode:
+  persistence:
+    enabled: false

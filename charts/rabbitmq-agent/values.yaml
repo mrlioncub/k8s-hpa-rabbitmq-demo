@@ -8,3 +8,11 @@ image:
   repository: mrlioncub/rabbitmq-agent
   tag: latest
   pullPolicy: IfNotPresent
+
+
+autoscaling:
+  enabled: false
+keda:
+  enabled: false
+kedavm:
+  enabled: false
