@@ -6,6 +6,7 @@ on:
       - master
     paths:
       - 'charts/rabbitmq-agent/**'
+  workflow_dispatch:
 
 jobs:
   release:
