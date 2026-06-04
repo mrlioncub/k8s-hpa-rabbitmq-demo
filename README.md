@@ -4,7 +4,7 @@ Demo Kubernetes Horizontal Pod Autoscaling based on RabbitMQ Queue (via Promethe
 
 ## Requirements
 
-  1. Kubernetes >= v1.23 (can use [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) with [enable addon metrics-server](https://kubernetes.io/docs/tutorials/hello-minikube/#enable-addons) or can use [MicroK8s](https://microk8s.io/docs) with [metrics-server](https://microk8s.io/docs/addons))
+  1. Kubernetes >= v1.23 (can use [minikube](https://kubernetes.io/docs/tasks/tools/install-minikube/) or can use [MicroK8s](https://microk8s.io/docs))
   2. [Helm 3](https://helm.sh/docs/intro/install/)
 
 ### Check Kubernetes
@@ -12,10 +12,6 @@ Demo Kubernetes Horizontal Pod Autoscaling based on RabbitMQ Queue (via Promethe
 Check Kubernetes server version:
 ```bash
 kubectl version
-```
-Check metrics-server:
-```bash
-kubectl get svc -n kube-system metrics-server
 ```
 Check Helm version:
 ```bash
@@ -170,7 +166,7 @@ https://github.com/kubernetes-sigs/prometheus-adapter/blob/master/docs/config-wa
 https://keda.sh/docs/latest/reference/scaledobject-spec/  
 https://keda.sh/docs/latest/scalers/rabbitmq-queue/  
 https://keda.sh/docs/2.19/scalers/prometheus/  
-https://www.rabbitmq.com/prometheus  
+https://www.rabbitmq.com/docs/monitoring  
 https://helmforge.dev/docs/charts/rabbitmq/
 
 https://ryanbaker.io/2019-10-07-scaling-rabbitmq-on-k8s/  

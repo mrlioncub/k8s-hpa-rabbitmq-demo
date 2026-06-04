@@ -6,8 +6,6 @@ auth:
 
 podAnnotations:
   prometheus.io/scrape: "true"
-  prometheus.io/port: "15692"
-  prometheus.io/path: "/metrics"
 
 metrics:
   enabled: true

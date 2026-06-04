@@ -2,8 +2,6 @@ prometheus:
   url: http://prometheus-server
   port: 80
 
-logLevel: 6
-
 rules:
   default: false
   custom:
