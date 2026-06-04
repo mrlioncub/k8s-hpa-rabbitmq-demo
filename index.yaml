@@ -1,0 +1,27 @@
+apiVersion: v1
+entries:
+  rabbitmq-agent:
+  - apiVersion: v2
+    appVersion: 1.0.0
+    created: "2026-06-04T07:39:02.134224888Z"
+    description: Demo Kubernetes HPA based on RabbitMQ Queue (Prometheus/VictoriaMetrics/KEDA)
+    digest: 67b271d4847777873f97a5f1f0d92e6fb31388a516f76da63fbe2431ea257bdb
+    home: https://github.com/mrlioncub/k8s-hpa-rabbitmq-demo
+    keywords:
+    - rabbitmq
+    - hpa
+    - keda
+    - prometheus
+    - victoriametrics
+    - autoscaling
+    maintainers:
+    - name: mrlioncub
+      url: https://github.com/mrlioncub
+    name: rabbitmq-agent
+    sources:
+    - https://github.com/mrlioncub/k8s-hpa-rabbitmq-demo
+    type: application
+    urls:
+    - https://github.com/mrlioncub/k8s-hpa-rabbitmq-demo/releases/download/rabbitmq-agent-0.1.0/rabbitmq-agent-0.1.0.tgz
+    version: 0.1.0
+generated: "2026-06-04T07:39:02.134231017Z"
