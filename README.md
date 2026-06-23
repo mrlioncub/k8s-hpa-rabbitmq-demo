@@ -41,6 +41,7 @@ helm repo add helmforge https://repo.helmforge.dev
 helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 helm repo add vm https://victoriametrics.github.io/helm-charts
 helm repo add kedacore https://kedacore.github.io/charts
+helm repo add k8s-hpa-rabbitmq-demo https://mrlioncub.github.io/k8s-hpa-rabbitmq-demo
 helm repo update
 ```
 __3.__ Run deploy (using helm 3). Choose 1 of the 3 options:
@@ -62,9 +63,17 @@ bash deploy-victoriametrics.sh
 
 __4.__ Check
 
+Check the queues from rabbitmq itself:
+```bash
+kubectl -n k8-hpa-rabbitmq-demo exec rabbitmq-server-0 -- rabbitmqctl list_queues -s
+```
+Check the rabbitmq metrics:
+```bash
+kubectl -n k8-hpa-rabbitmq-demo run curl -it --rm --image=alpine/curl --restart=Never -- curl -s http://rabbitmq-server:15692/metrics | grep 'rabbitmq_queue_messages{vhost="/",queue="task_queue"}'
+```
 Check hpa (after deployment rabbitmq-agent-reciever):
 ```bash
-kubectl get hpa -n k8-hpa-rabbitmq-demo
+kubectl -n k8-hpa-rabbitmq-demo get hpa
 ```
 Result:
 ```
@@ -105,7 +114,7 @@ Result:
 ```
 (Only for KEDA) Check scaledobject (a few minutes after deployment KEDA):
 ```bash
-kubectl get scaledobject -n k8-hpa-rabbitmq-demo
+kubectl -n k8-hpa-rabbitmq-demo get scaledobject
 ```
 Result:
 ```
@@ -115,7 +124,7 @@ rabbitmq-scaledobject   apps/v1.Deployment   rabbitmq-agent-reciever   1     10 
 
 __5.__ Run sending messages:
 ```bash
-kubectl --namespace k8-hpa-rabbitmq-demo run sender -it --rm --image=mrlioncub/rabbitmq-agent --restart=Never sender 50
+kubectl --namespace k8-hpa-rabbitmq-demo run sender -it --rm --image=mrlioncub/rabbitmq-agent --restart=Never -- sender 50
 ```
 Result:
 ```
@@ -126,7 +135,7 @@ pod "sender" deleted
 ```
 __6.__ Get info hpa:
 ```bash
-kubectl get hpa -n k8-hpa-rabbitmq-demo -w
+kubectl -n k8-hpa-rabbitmq-demo get hpa -w
 ```
 Result:
 ```
@@ -165,7 +174,7 @@ https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale-walkth
 https://github.com/kubernetes-sigs/prometheus-adapter/blob/master/docs/config-walkthrough.md  
 https://keda.sh/docs/latest/reference/scaledobject-spec/  
 https://keda.sh/docs/latest/scalers/rabbitmq-queue/  
-https://keda.sh/docs/2.19/scalers/prometheus/  
+https://keda.sh/docs/latest/scalers/prometheus/  
 https://www.rabbitmq.com/docs/monitoring  
 https://helmforge.dev/docs/charts/rabbitmq/
 
